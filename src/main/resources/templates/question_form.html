@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: (${question.id == null} ? 'Add New Question' : 'Edit Question')">Question Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/navbar :: navbar}">Navbar</div>
+
+    <h1 th:text="${pageTitle} ?: (${question.id == null} ? 'Add New Question' : 'Edit Question')">Question Form</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/questions/save}" th:object="${question}" method="post" class="mt-3">
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <ul class="alert alert-danger">
+             <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Global error</li>
+            </ul>
+        </div>
+         <div th:if="${#fields.hasErrors('exam')}">
+             <ul class="alert alert-danger">
+                <li th:each="err : ${#fields.errors('exam')}" th:text="${err}">Exam error</li>
+            </ul>
+        </div>
+
+
+        <input type="hidden" th:field="*{id}" />
+        <input type="hidden" th:if="${question.exam != null && question.exam.id != null}" th:field="*{exam.id}" />
+
+        <div class="mb-3">
+            <label for="text" class="form-label">Question Text:</label>
+            <textarea id="text" th:field="*{text}" rows="3" class="form-control" required></textarea>
+            <p th:if="${#fields.hasErrors('text')}" th:errors="*{text}" class="text-danger"></p>
+        </div>
+
+        <div class="mb-3">
+            <label for="optionA" class="form-label">Option A:</label>
+            <input type="text" id="optionA" th:field="*{optionA}" class="form-control" required />
+            <p th:if="${#fields.hasErrors('optionA')}" th:errors="*{optionA}" class="text-danger"></p>
+        </div>
+        <div class="mb-3">
+            <label for="optionB" class="form-label">Option B:</label>
+            <input type="text" id="optionB" th:field="*{optionB}" class="form-control" required />
+            <p th:if="${#fields.hasErrors('optionB')}" th:errors="*{optionB}" class="text-danger"></p>
+        </div>
+        <div class="mb-3">
+            <label for="optionC" class="form-label">Option C:</label>
+            <input type="text" id="optionC" th:field="*{optionC}" class="form-control" required />
+            <p th:if="${#fields.hasErrors('optionC')}" th:errors="*{optionC}" class="text-danger"></p>
+        </div>
+        <div class="mb-3">
+            <label for="optionD" class="form-label">Option D:</label>
+            <input type="text" id="optionD" th:field="*{optionD}" class="form-control" required />
+            <p th:if="${#fields.hasErrors('optionD')}" th:errors="*{optionD}" class="text-danger"></p>
+        </div>
+
+        <div class="mb-3">
+            <label for="correctAnswer" class="form-label">Correct Answer:</label>
+            <select id="correctAnswer" th:field="*{correctAnswer}" class="form-select" required>
+                <option value="">-- Select Correct Option --</option>
+                <option th:each="opt : ${options}" th:value="${opt}" th:text="${opt}"></option>
+            </select>
+            <p th:if="${#fields.hasErrors('correctAnswer')}" th:errors="*{correctAnswer}" class="text-danger"></p>
+        </div>
+        
+        <div>
+            <button type="submit" class="btn btn-success">Save Question</button>
+            <a th:if="${question.exam != null && question.exam.id != null}" th:href="@{/questions/exam/{examId}(examId=${question.exam.id})}" class="btn btn-secondary">Cancel</a>
+            <a th:if="${question.exam == null || question.exam.id == null}" th:href="@{/exams}" class="btn btn-secondary">Cancel (Back to Exams)</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Conduct Exam</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <style>
+        .question-block { margin-bottom: 25px; padding: 15px; border: 1px solid #eee; border-radius: 4px; background-color: #fdfdfd; }
+        .question-block h4 { margin-top: 0; color: #333; }
+        .options label { display: block; margin: 8px 0; padding: 10px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; }
+        .options label:hover { background-color: #f0f8ff; }
+        .options input[type=radio] { margin-right: 10px; vertical-align: middle;}
+        .timer { font-size: 1.5em; font-weight: bold; color: #d9534f; text-align: right; margin-bottom: 20px; padding: 10px; background-color: #fff; border: 1px solid #eee; border-radius: 4px; position: sticky; top: 10px; z-index: 1000;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/navbar :: navbar}">Navbar</div>
+
+    <h1 th:text="${pageTitle}" class="mb-3">Conduct Exam</h1>
+    <h2 th:if="${exam}" th:text="${exam.title}" class="h3 mb-3">Exam Title</h2>
+
+    <div class="timer">
+        Time Remaining: <span id="time" th:text="${#numbers.formatInteger(remainingTimeInSeconds / 60, 2)} + ':' + ${#numbers.formatInteger(remainingTimeInSeconds % 60, 2)}">00:00</span>
+    </div>
+
+    <form id="examForm" th:action="@{/student/attempts/{attemptId}/submit(attemptId=${attempt.id})}" method="post">
+        <div th:if="${#lists.isEmpty(questions)}" class="alert alert-warning">
+            <p>No questions found for this exam. Please contact an administrator.</p>
+        </div>
+
+        <div th:each="question, iterStat : ${questions}" class="question-block">
+            <h4 th:text="'Q' + (${iterStat.count}) + '. ' + ${question.text}">Question Text</h4>
+            <div class="options">
+                <label th:for="'q' + ${question.id} + '_A'">
+                    <input type="radio" th:name="'answers[' + ${question.id} + ']'" th:id="'q' + ${question.id} + '_A'" value="A" />
+                    A) <span th:text="${question.optionA}"></span>
+                </label>
+                <label th:for="'q' + ${question.id} + '_B'">
+                    <input type="radio" th:name="'answers[' + ${question.id} + ']'" th:id="'q' + ${question.id} + '_B'" value="B" />
+                    B) <span th:text="${question.optionB}"></span>
+                </label>
+                <label th:for="'q' + ${question.id} + '_C'">
+                    <input type="radio" th:name="'answers[' + ${question.id} + ']'" th:id="'q' + ${question.id} + '_C'" value="C" />
+                    C) <span th:text="${question.optionC}"></span>
+                </label>
+                <label th:for="'q' + ${question.id} + '_D'">
+                    <input type="radio" th:name="'answers[' + ${question.id} + ']'" th:id="'q' + ${question.id} + '_D'" value="D" />
+                    D) <span th:text="${question.optionD}"></span>
+                </label>
+            </div>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(questions)}" class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Submit Exam</button>
+        </div>
+    </form>
+
+    <script th:inline="javascript">
+        var timeRemainingInSeconds =  0;
+        var timerDisplay = document.getElementById('time');
+        var examForm = document.getElementById('examForm');
+        var submitted = false; 
+
+        function updateTimerDisplay() {
+            if (!timerDisplay) return;
+            var minutes = Math.floor(timeRemainingInSeconds / 60);
+            var seconds = timeRemainingInSeconds % 60;
+            timerDisplay.textContent =
+                (minutes < 10 ? "0" : "") + minutes + ":" +
+                (seconds < 10 ? "0" : "") + seconds;
+        }
+
+        function countdown() {
+            if (timeRemainingInSeconds > 0) {
+                timeRemainingInSeconds--;
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval);
+                if (timerDisplay) timerDisplay.textContent = "Time's Up!";
+                if (examForm && !submitted) {
+                    submitted = true; 
+                    alert("Time is up! Your exam will be submitted automatically.");
+                    examForm.submit();
+                }
+            }
+        }
+        if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
+        }
+
+
+        if (timeRemainingInSeconds > 0) {
+            updateTimerDisplay(); 
+            var timerInterval = setInterval(countdown, 1000);
+        } else {
+             if (timerDisplay) timerDisplay.textContent = "Time's Up!";
+             if (examForm && !submitted) {
+             }
+        }
+
+    </script>
+</div>
+</body>
+</html>

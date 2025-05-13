@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Student Dashboard'">Student Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="site-content">
+        <div class="container">
+            <header class="dashboard-header">
+                <h1 th:text="${pageTitle} ?: 'Student Dashboard'">Student Dashboard</h1>
+                <p>Hello, <strong sec:authentication="name">User</strong>! Your role(s): <span sec:authentication="principal.authorities">Authorities</span></p>
+            </header>
+            
+            <h2 class="dashboard-section-title">Your Actions</h2>
+            <div class="dashboard-actions-grid">
+
+                <div class="action-card">
+                    <h3 class="action-card-title">View & Take Exams</h3>
+                    <p class="action-card-description">Browse the list of exams you are eligible for and start an attempt.</p>
+                    <a th:href="@{/exams}" class="btn btn-primary">Go to Exams</a>
+                </div>
+
+                <div class="action-card">
+                    <h3 class="action-card-title">My Results</h3>
+                    <p class="action-card-description">Check your scores and review your performance on completed exams.</p>
+                    <a th:href="@{/student/my-results}" class="btn btn-info">View My Results</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <span>© <span th:text="${#dates.year(#dates.createNow())}">2024</span> Online Exam System. All rights reserved.</span>
+        </div>
+    </footer>
+</body>
+</html>

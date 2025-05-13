@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Instructor Dashboard'">Instructor Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="site-content">
+        <div class="container">
+            <header class="dashboard-header">
+                <h1 th:text="${pageTitle} ?: 'Instructor Dashboard'">Instructor Dashboard</h1>
+                <p>Hello, <strong sec:authentication="name">User</strong>! Your current role(s): <span sec:authentication="principal.authorities">Authorities</span></p>
+            </header>
+
+            <h2 class="dashboard-section-title">Exam & Course Management</h2>
+            <div class="dashboard-actions-grid">
+                <div class="action-card">
+                    <h3 class="action-card-title">Create New Exam</h3>
+                    <p class="action-card-description">Design and publish new exams for your students.</p>
+                    <a th:href="@{/exams/create}" class="btn btn-primary">Create Exam</a>
+                </div>
+                <div class="action-card">
+                    <h3 class="action-card-title">Manage Exams & Questions</h3>
+                    <p class="action-card-description">Edit existing exams, add/modify questions, and view exam settings.</p>
+                    <a th:href="@{/exams}" class="btn btn-info">Manage All Exams</a>
+                </div>
+                <div class="action-card">
+                    <h3 class="action-card-title">Manage Courses</h3>
+                    <p class="action-card-description">Organize your exams by creating and managing courses.</p>
+                    <a th:href="@{/courses}" class="btn btn-secondary">Manage Courses</a>
+                </div>
+            </div>
+
+            <h2 class="dashboard-section-title">Student Performance</h2>
+            <div class="dashboard-actions-grid">
+                <div class="action-card">
+                    <h3 class="action-card-title">View Student Results</h3>
+                    <p class="action-description">See a comprehensive list of all attempts across all exams, or filter by specific exam.</p>
+                    <a th:href="@{/instructor/results/all}" class="btn btn-success">View All Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <span>© <span th:text="${#dates.year(#dates.createNow())}">2024</span> Online Exam System. All rights reserved.</span>
+        </div>
+    </footer>
+</body>
+</html>

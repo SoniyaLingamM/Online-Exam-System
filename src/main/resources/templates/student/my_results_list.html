@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'My Exam History'">My Exam History</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/navbar :: navbar}">Navbar</div>
+
+    <h1 th:text="${pageTitle} ?: 'My Exam History'">My Exam History</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(attempts)}" class="alert alert-info mt-3">
+        <p>You have not attempted any exams yet.</p>
+    </div>
+
+    <table class="table" th:if="${not #lists.isEmpty(attempts)}">
+        <thead>
+            <tr>
+                <th>Exam Title</th>
+                <th>Your Score</th>
+                <th>Total Questions</th>
+                <th>Status</th>
+                <th>Date Submitted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="attempt : ${attempts}" th:with="currentExam=${attempt.exam}">
+                <td th:text="${currentExam != null ? currentExam.title : 'N/A'}"></td>
+                <td th:text="${attempt.score}"></td>
+                <td th:text="${currentExam != null && currentExam.questions != null ? #lists.size(currentExam.questions) : (currentExam != null && currentExam.getPassingScore() != null ? 'N/A' : 'N/A')}"></td>
+                <td>
+                    <span th:if="${currentExam != null && currentExam.passingScore != null}">
+                        <span th:if="${attempt.score >= currentExam.passingScore}" style="color:green; font-weight:bold;">PASS</span>
+                        <span th:unless="${attempt.score >= currentExam.passingScore}" style="color:red; font-weight:bold;">FAIL</span>
+                    </span>
+                    <span th:unless="${currentExam != null && currentExam.passingScore != null}">N/A</span>
+                </td>
+                <td th:text="${attempt.submissionTime != null ? #temporals.format(attempt.submissionTime, 'dd-MMM-yyyy HH:mm') : 'In Progress'}"></td>
+                <td>
+                    <a th:if="${attempt.submissionTime != null}"
+                       th:href="@{/student/attempts/{attemptId}/result(attemptId=${attempt.id})}"
+                       class="btn btn-info btn-sm">View Details</a>
+                    <span th:unless="${attempt.submissionTime != null}">N/A (Not Submitted)</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+     <a th:href="@{/student/dashboard}" class="btn btn-secondary mt-4">Back to Dashboard</a>
+</div>
+</body>
+</html>

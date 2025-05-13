@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Exam Result & Review</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <style>
+        .result-summary { margin-top: 20px; text-align:center; }
+        .result-summary p { font-size: 1.2em; margin: 10px 0; }
+        .score { font-size: 2.2em; font-weight: bold; color: #198754; } 
+        .status-pass { font-size: 1.5em; color: #198754; font-weight: bold;}
+        .status-fail { font-size: 1.5em; color: #dc3545; font-weight: bold;}
+        
+        .review-section { margin-top: 30px; text-align: left; }
+        .review-question { border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #fdfdfd; }
+        .review-question h4 { margin-top: 0; color: #333; margin-bottom: 10px;}
+        .review-options label { display: block; margin: 8px 0; padding: 10px; border-radius: 4px; border: 1px solid #ced4da; }
+        .review-options input[type=radio] { margin-right: 10px; vertical-align: middle; }
+
+        .selected-answer { background-color: #cfe2ff; border-left: 4px solid #0d6efd !important; font-weight: 500; } 
+        .selected-answer.correct-answer-option { background-color: #d1e7dd; border-left: 4px solid #198754 !important; } 
+        .selected-answer.incorrect-answer-option { background-color: #f8d7da; border-left: 4px solid #dc3545 !important; } 
+        .not-selected-but-correct { border-left: 4px solid #198754; background-color: #f0fff0; font-weight: 500;}
+
+        .status-correct { color:#198754; font-weight:bold; }
+        .status-incorrect { color:#dc3545; font-weight:bold; }
+        .status-not-answered { color:#fd7e14; font-weight:bold; } 
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/navbar :: navbar}">Navbar</div>
+
+    <h1 th:text="${pageTitle}" class="mb-3">Exam Result & Review</h1>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${infoMessage}" class="alert alert-info" th:text="${infoMessage}"></div>
+
+    <div th:if="${attempt != null && exam != null}" class="result-summary">
+        <h2 th:text="${exam.title}" class="h3">Exam Title</h2>
+        <hr class="my-3"/>
+        <p>Congratulations, <span sec:authentication="principal.username" style="font-weight: bold;">User</span>!</p>
+        <p>You have completed the exam.</p>
+        <p>Your Score: <span class="score" th:text="${attempt.score}">0</span> / <span th:text="${totalQuestionsInExam}">0</span></p>
+        
+        <div th:if="${exam.passingScore != null}" class="mt-3">
+            <p th:if="${attempt.score >= exam.passingScore}" class="status-pass">Status: PASS</p>
+            <p th:unless="${attempt.score >= exam.passingScore}" class="status-fail">Status: FAIL</p>
+            (Passing Score: <span th:text="${exam.passingScore}"></span>)
+        </div>
+
+        <p>Questions Attempted: <span th:text="${attempt.totalQuestionsAttempted}">0</span></p>
+        <p th:if="${attempt.submissionTime}">Submitted on: <span th:text="${#temporals.format(attempt.submissionTime, 'dd-MMM-yyyy HH:mm')}"></span></p>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(studentAnswers)}" class="review-section">
+        <h3 class="mb-3">Detailed Review:</h3>
+        <div th:each="sa, iterStat : ${studentAnswers}" class="review-question">
+            <h4 th:text="'Q' + ${iterStat.count} + '. ' + ${sa.question.text}">Question Text</h4>
+            <div class="review-options">
+                <label th:classappend="${sa.selectedOption == 'A' ? 'selected-answer' : ''} + ' ' + ${sa.question.correctAnswer == 'A' ? (sa.selectedOption == 'A' ? 'correct-answer-option' : 'not-selected-but-correct') : (sa.selectedOption == 'A' ? 'incorrect-answer-option' : '')}">
+                    <input type="radio" th:name="'review_q' + ${sa.question.id}" disabled="disabled" th:checked="${sa.selectedOption == 'A'}" /> A) <span th:text="${sa.question.optionA}"></span>
+                </label>
+                <label th:classappend="${sa.selectedOption == 'B' ? 'selected-answer' : ''} + ' ' + ${sa.question.correctAnswer == 'B' ? (sa.selectedOption == 'B' ? 'correct-answer-option' : 'not-selected-but-correct') : (sa.selectedOption == 'B' ? 'incorrect-answer-option' : '')}">
+                    <input type="radio" th:name="'review_q' + ${sa.question.id}" disabled="disabled" th:checked="${sa.selectedOption == 'B'}" /> B) <span th:text="${sa.question.optionB}"></span>
+                </label>
+                <label th:classappend="${sa.selectedOption == 'C' ? 'selected-answer' : ''} + ' ' + ${sa.question.correctAnswer == 'C' ? (sa.selectedOption == 'C' ? 'correct-answer-option' : 'not-selected-but-correct') : (sa.selectedOption == 'C' ? 'incorrect-answer-option' : '')}">
+                    <input type="radio" th:name="'review_q' + ${sa.question.id}" disabled="disabled" th:checked="${sa.selectedOption == 'C'}" /> C) <span th:text="${sa.question.optionC}"></span>
+                </label>
+                <label th:classappend="${sa.selectedOption == 'D' ? 'selected-answer' : ''} + ' ' + ${sa.question.correctAnswer == 'D' ? (sa.selectedOption == 'D' ? 'correct-answer-option' : 'not-selected-but-correct') : (sa.selectedOption == 'D' ? 'incorrect-answer-option' : '')}">
+                    <input type="radio" th:name="'review_q' + ${sa.question.id}" disabled="disabled" th:checked="${sa.selectedOption == 'D'}" /> D) <span th:text="${sa.question.optionD}"></span>
+                </label>
+            </div>
+            <p style="margin-top:15px;">
+                Your Answer: <strong th:text="${sa.selectedOption != null ? sa.selectedOption : 'Not Answered'}"></strong>.
+                Status:
+                <span th:if="${sa.selectedOption == null}" class="status-not-answered">Not Answered</span>
+                <span th:if="${sa.selectedOption != null && sa.isCorrect}" class="status-correct">Correct!</span>
+                <span th:if="${sa.selectedOption != null && !sa.isCorrect}" class="status-incorrect">Incorrect. Correct answer was <strong th:text="${sa.question.correctAnswer}"></strong>.</span>
+            </p>
+        </div>
+    </div>
+    <div th:if="${#lists.isEmpty(studentAnswers) && attempt != null && exam != null}" class="review-section alert alert-info">
+        <p>No detailed answers available for review for this attempt.</p>
+    </div>
+
+    <div th:if="${attempt != null && exam != null}" class="mt-4 text-center">
+        <a th:href="@{/student/my-results}" class="btn btn-primary">View All My Results</a>
+        <a th:href="@{/student/dashboard}" class="btn btn-primary" style="margin-left:10px;">Back to Dashboard</a>
+    </div>
+    <div th:if="${attempt == null || exam == null}" class="mt-4 text-center">
+        <p>Could not load exam result details.</p>
+         <a th:href="@{/student/dashboard}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+</body>
+</html>

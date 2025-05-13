@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Exam Instructions</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/navbar :: navbar}">Navbar</div>
+
+    <h1 th:text="${pageTitle}" class="mb-3">Exam Instructions</h1>
+
+    <div th:if="${exam}">
+        <h2 th:text="${exam.title}" class="h3">Exam Title</h2>
+        <p><strong>Description:</strong> <span th:text="${exam.description ?: 'No description provided.'}"></span></p>
+        <p><strong>Duration:</strong> <span th:text="${exam.durationMinutes}"></span> minutes</p>
+        <p><strong>Number of Questions:</strong> <span th:text="${totalQuestions ?: 0}"></span></p>
+
+        <hr class="my-4"/>
+        <h3>Instructions:</h3>
+        <ul style="list-style-type: decimal; padding-left: 20px;">
+            <li>Read each question carefully before answering.</li>
+            <li>You have <strong th:text="${exam.durationMinutes}"></strong> minutes to complete this exam.</li>
+            <li>Once you click "Start Exam", the timer will begin immediately.</li>
+            <li>Do not refresh the page or use the browser's back/forward navigation buttons during the exam, as this may disrupt your session.</li>
+            <li>Ensure you have a stable internet connection throughout the exam.</li>
+            <li>All questions must be answered before final submission, or they will be marked as unanswered.</li>
+            <li>Click the "Submit Exam" button at the bottom of the page when you have completed all questions.</li>
+            <li>If the timer runs out, your exam will be submitted automatically with the answers you have selected up to that point.</li>
+        </ul>
+
+        <form th:action="@{/student/exams/{examId}/start(examId=${exam.id})}" method="post" class="mt-4">
+            <button type="submit" class="btn btn-success">Start Exam</button>
+            <a th:href="@{/exams}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+    <div th:unless="${exam}" class="alert alert-warning mt-3">
+        <p>Exam details could not be loaded.</p>
+        <a th:href="@{/exams}" class="btn btn-secondary">Back to Exams</a>
+    </div>
+</div>
+</body>
+</html>

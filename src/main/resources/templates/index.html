@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Online Exam System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+    <div class="site-content">
+        <div class="hero-section">
+            <div class="container">
+                <h1 class="hero-title">Welcome to the Online Exam System!</h1>
+                <p class="hero-slogan">Your gateway to seamless and effective online assessments.</p>
+                <p class="hero-subtitle mt-3">
+                    <span sec:authorize="isAnonymous()">Please login to access your dashboard or register if you are a new user.</span>
+                    <span sec:authorize="isAuthenticated()">You are logged in. Proceed to your dashboard.</span>
+                </p>
+                
+                <div class="mt-4">
+                    <span sec:authorize="isAnonymous()">
+                        <a th:href="@{/login}" class="btn btn-primary btn-lg">Login Now</a>
+                        <a th:href="@{/register}" class="btn btn-success btn-lg" style="margin-left: 15px;">Register Account</a>
+                    </span>
+                    <span sec:authorize="isAuthenticated()">
+                         <a th:href="${#authentication.principal.authorities.contains(new org.springframework.security.core.authority.SimpleGrantedAuthority('ROLE_ADMIN')) ? '/admin/dashboard' : 
+                                      (#authentication.principal.authorities.contains(new org.springframework.security.core.authority.SimpleGrantedAuthority('ROLE_INSTRUCTOR')) ? '/instructor/dashboard' : '/student/dashboard')}" 
+                            class="btn btn-info btn-lg">Go to My Dashboard</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <span>© <span th:text="${#dates.year(#dates.createNow())}">2024</span> Online Exam System. All rights reserved.</span>
+        </div>
+    </footer>
+</body>
+</html>

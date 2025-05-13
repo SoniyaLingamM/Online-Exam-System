@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<nav th:fragment="navbar" class="navbar-custom">
+    <div class="container">
+        <a class="navbar-brand-custom" th:href="@{/}">Online Exam System</a>
+        <div class="navbar-links-custom">
+            <ul>
+                <li sec:authorize="isAuthenticated()">
+                    Welcome, <strong sec:authentication="name">User</strong>!
+                </li>
+                <li sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/student/dashboard}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/student/dashboard')} ? 'active' : ''">My Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/exams}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.equals('/exams')} ? 'active' : ''">View Exams</a>
+                </li>
+                 <li sec:authorize="hasRole('STUDENT')">
+                    <a th:href="@{/student/my-results}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/student/my-results')} ? 'active' : ''">My Results</a>
+                </li>
+                <li sec:authorize="hasRole('INSTRUCTOR')">
+                    <a th:href="@{/instructor/dashboard}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/instructor/dashboard')} ? 'active' : ''">Instructor Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('INSTRUCTOR')">
+                    <a th:href="@{/exams}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.equals('/exams')} ? 'active' : ''">Manage Exams</a>
+                </li>
+                 <li sec:authorize="hasRole('INSTRUCTOR')">
+                    <a th:href="@{/courses}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/courses')} ? 'active' : ''">Manage Courses</a>
+                </li>
+                 <li sec:authorize="hasRole('INSTRUCTOR')">
+                    <a th:href="@{/instructor/results/all}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/instructor/results')} ? 'active' : ''">View Student Results</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/dashboard}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/admin/dashboard')} ? 'active' : ''">Admin Dashboard</a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/users}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/admin/users')} ? 'active' : ''">Manage Users</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" style="display: flex; align-items: center; margin:0;">
+                        <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+                    </form>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a th:href="@{/login}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/login')} ? 'active' : ''">Login</a>
+                </li>
+                <li sec:authorize="isAnonymous()">
+                    <a th:href="@{/register}" th:classappend="${httpServletRequest.requestURI != null && httpServletRequest.requestURI.startsWith('/register')} ? 'active' : ''">Register</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</html>
